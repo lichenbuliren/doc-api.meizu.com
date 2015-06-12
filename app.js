@@ -7,8 +7,8 @@ var mongoose = require('mongoose');
 var config = require('./config');
 var app = koa();
 
-app.use(logger());
 app.use(staticServer(path.join(__dirname, 'public')));
+app.use(logger());
 // app.use(bodyParser());
 // 自定义路由
 routers(app);
