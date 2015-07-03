@@ -1,8 +1,16 @@
 var bodyParse = require('koa-body')();
 var MD5 = require('MD5');
+var _ = require('lodash');
+
 var Admin = require('../models/Admin');
-var router = require('koa-router')();
+var Project = require('../models/Project');
+
+var router = require('koa-router')({
+    prefix: '/admin'
+});
 module.exports = function(app) {
+
+    // 登录请求
     router.post('/login', bodyParse, function*(next) {
         var data = this.request.body,
             password = MD5(data.password),
@@ -32,12 +40,26 @@ module.exports = function(app) {
         }
     });
 
+    // 获取文档信息
     router.get('/projects',function*(next){
-        var projects = [];
+        var projects;
+        try{
+            projects = yield Project.find().exec();
+        }catch(e){
+            this.body = {
+                "error_code" : 500,
+                "message" : "获取数据失败，请稍后重试！"
+            }
+        }
+
         this.body = {
             "error_code":200,
-            "data": projects
+            "data": projects || []
         }
+    });
+
+    router.post('/projects',function*(next){
+
     });
     app.use(router.routes());
 }
